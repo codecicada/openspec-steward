@@ -98,6 +98,16 @@ If a test reads `openspec/`, for example a fixture that parses a spec, its job
 must not depend on the gate. The gate skips whatever depends on it. It does not
 check what the job reads.
 
+**No matrix job may depend on it.** A job-level `if:` is evaluated before the
+matrix is expanded. A gated matrix job that is skipped therefore reports one
+check with its name unexpanded, such as `unit tests (node ${{ matrix.node }})`.
+The expanded names never report. Under branch protection or a ruleset that
+requires them, the pull request stays `BLOCKED`. Steward's own first archive
+head hit exactly this. Write each leg as its own job with a static `name:`. A
+skipped plain job reports its name, and a skipped required check satisfies
+the rule. Gating with a step-level `if:` inside the matrix avoids the block, but
+the check then reads `success` with nothing run: an empty green.
+
 ## Verifying the head it skipped
 
 `/verify-green` counts a `skipped` check as passing only when you re-derive the
@@ -107,8 +117,8 @@ rule yourself:
 - The previous verified head reads `success` on every check, by name.
 - `git diff --name-only <previous> HEAD` lists only `openspec/` and `todo/`.
 
-A skipped matrix job shows as one check with its name unexpanded. Compare
-against the previous head's names.
+Compare by name against the previous head's names. A name the previous head had
+and this head lacks is outstanding. Check that `mergeStateStatus` reads `CLEAN`.
 
 ## What it does not cover
 

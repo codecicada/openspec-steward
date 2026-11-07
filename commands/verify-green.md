@@ -33,10 +33,12 @@ trusting the job that decided it. All three of these must hold:
   git diff --name-only <previous head> HEAD
   ```
 
-If any of the three fails, a `skipped` check is not green: name it. A skipped
-matrix job shows as one check with its name unexpanded, such as
-`unit tests (node ${{ matrix.node }})`. Compare by name against the previous
-head's names, not this one's.
+If any of the three fails, a `skipped` check is not green: name it. Compare by
+name against the previous head's names. A name the previous head had and this
+head lacks is outstanding, not skipped. That is what a gated matrix job leaves:
+one check with its name unexpanded, such as `unit tests (node ${{ matrix.node }})`.
+Also confirm `mergeStateStatus` reads `CLEAN`. A ruleset still requires the
+missing names, and `BLOCKED` is how it says so.
 
 Report anything else as not green, naming which checks are outstanding. In
 particular:
