@@ -8,7 +8,7 @@
 
 Each change pays three full CI runs. The archive head reruns tests on code
 already green; only spec checks judge it. No archive head has gone red in
-steward or core-api.
+steward or in a consumer repository.
 
 ## What Changes
 
@@ -20,7 +20,7 @@ steward or core-api.
 ## Non-goals
 
 - The push-to-base run.
-- Editing core-api.
+- Editing consumer repositories.
 - A release.
 
 ## Capabilities

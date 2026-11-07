@@ -6,11 +6,11 @@
 and refuses on any difference, telling the user to merge by hand and rerun. A
 merge that keeps the repository's own rules is still different text, so the
 rerun refuses again and `AGENTS.md` is never written. Reproduced with steward's
-rules plus a `general:` list and an extra `tasks:` item: exit 1. core-api's real
+rules plus a `general:` list and an extra `tasks:` item: exit 1. A consumer's real
 block also lacks three steward rules (the TL;DR item, all of `design:` and
 `specs:`), so it would refuse even under a fix, and needs to be told which.
 
-core-api's `AGENTS.md` is a router capped at 40 lines, "pointers, never prose".
+A consumer's `AGENTS.md` is a router capped at 40 lines, "pointers, never prose".
 It is 31 lines; the current 19-line section plus its blank line makes 51. It
 also says no apply, commit or archive happens without approval, which the
 section's "Merge is the only gate" contradicts. See proposal.md for why.
@@ -49,7 +49,7 @@ section's "Merge is the only gate" contradicts. See proposal.md for why.
 - Contradicting rules (a 500-word cap next to steward's 150) pass; init checks
   presence, not consistency.
 - A `rules:` block in a style init cannot read refuses until rewritten in block
-  style. Every block `openspec init` and core-api write is block style.
+  style. Every block `openspec init` and the consumers seen write is block style.
 - Existing consumers with the old section get the short one on the next run,
   since the text between the markers is replaced.
 - The link follows `master`, so it moves with the docs.

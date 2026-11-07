@@ -3,7 +3,7 @@
  *
  * Agents other than Claude Code read `AGENTS.md` and never see this plugin's
  * skills, so this is where they learn the flow. The section is a pointer, not
- * prose: many `AGENTS.md` files are routers with a line cap (core-api's is 40).
+ * prose: many `AGENTS.md` files are routers with a line cap (40 lines in one consumer).
  * It states the order, points at `openspec/config.yaml` for the artifact rules
  * rather than repeating them (two copies would drift apart), and links the
  * flow's own page from its heading for the rest.
