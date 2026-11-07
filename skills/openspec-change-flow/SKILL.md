@@ -148,13 +148,21 @@ In the same archive commit, remove the plan the change started from:
 `git rm -q --ignore-unmatch -- todo/<name>.md`. It exits 0 when there is no plan,
 so a change that never had one needs no special case.
 
-Then commit the archive and let CI run again. That second cycle is the one that
-verifies the only thing the archive commit changed.
+Then commit the archive and let CI run again. That second cycle verifies the only
+thing the archive commit changed, and only the spec checks can judge it. The
+tests already passed on the previous head, against the same code. A repository
+wired with `openspec-archive-head` therefore skips its test jobs on this head:
+the push touched only `openspec/` and `todo/`, the previous head was green, and
+the base has not moved. It runs `archive head` and the spec checks instead.
+Every other head runs the full suite. See `docs/archive-head.md`.
 
 ## Merging
 
 Merge on explicit request, and verify green by name against the head SHA first —
-including after the archive commit, which is a new head. If asked to merge while
+including after the archive commit, which is a new head. If its test jobs read
+`skipped`, that is green only when you re-derive the rule `/verify-green` gives:
+`archive head` passed, the previous head was green by name, and the diff touches
+only `openspec/` and `todo/`. If asked to merge while
 checks are still running, say so and hold rather than merging an unverified head;
 the instruction is about intent, not timing.
 

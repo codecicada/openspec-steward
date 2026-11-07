@@ -30,8 +30,79 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  archive-head:
+    name: archive head
+    runs-on: ubuntu-26.04
+
+    # Decides whether this head may skip the test jobs: only when the push since
+    # a head whose check runs all read success touched nothing but `openspec/`
+    # and `todo/` — an archive commit, in practice — and the base has not moved
+    # under it. Conditions and wiring: docs/archive-head.md.
+    #
+    # It runs on EVERY event, never behind an `if:`. A job whose `needs` was
+    # skipped is skipped too, so gating this one would silently skip every test
+    # job on exactly the events it was never meant to judge. Off a pull request
+    # `synchronize` it decides skip=false without touching git or the API.
+    #
+    # Fails closed: anything it cannot evaluate is skip=false, and a crash makes
+    # this job red, which leaves the jobs behind it `skipped` on a red build.
+    permissions:
+      contents: read
+      checks: read
+    outputs:
+      skip: ${{ steps.decide.outputs.skip }}
+    steps:
+      # Full history: `before`, the PR head and the base must all be in the
+      # clone for the ancestry checks. An unreachable SHA reads as skip=false.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          node scripts/archive-head/index.mjs
+          --event "${{ github.event.action || github.event_name }}"
+          --before "${{ github.event.before }}"
+          --head "${{ github.event.pull_request.head.sha }}"
+          --base "origin/${{ github.base_ref }}"
+
+  specs:
+    name: specification checks
+    runs-on: ubuntu-26.04
+
+    # The one job that judges what an archive commit changes, so it never
+    # depends on `archive head`: it runs on every head, skip or not. Before this
+    # job existed, the "second cycle" after an archive re-ran every test here
+    # and checked nothing the archive had touched.
+    #
+    # `strict` shells out to `npx --no-install openspec`, so the CLI is
+    # installed without saving it: the package keeps zero dependencies. Pinned
+    # exactly, because a minor release adding a validation rule would redden a
+    # build that changed nothing here.
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - run: npm install --no-save --no-audit --no-fund @fission-ai/openspec@1.15.0
+
+      - run: node scripts/check-specs/index.mjs --root .
+
   unit:
     name: unit tests (node ${{ matrix.node }})
+    # Skipped on an archive head. A skipped matrix job shows as ONE check with
+    # its name unexpanded; commands/verify-green.md says how that head's green
+    # is read.
+    needs: archive-head
+    if: needs.archive-head.outputs.skip != 'true'
     # Pinned to the current LTS image rather than `ubuntu-latest`, which still
     # resolves to 24.04 and moves underneath you when GitHub migrates it. A
     # runner image that changes on GitHub's schedule can redden or green a
@@ -66,6 +137,8 @@ jobs:
 
   bin:
     name: bin smoke test
+    needs: archive-head
+    if: needs.archive-head.outputs.skip != 'true'
     runs-on: ubuntu-26.04
 
     # One Node version, not the matrix. This job tests the packaging surface —
@@ -91,6 +164,8 @@ jobs:
 
   gates:
     name: gate refusals
+    needs: archive-head
+    if: needs.archive-head.outputs.skip != 'true'
     runs-on: ubuntu-26.04
 
     # The `/start-change` and `/stop-change` gates are prose, so this job cannot
@@ -120,6 +195,8 @@ jobs:
 
   plugin:
     name: plugin validate
+    needs: archive-head
+    if: needs.archive-head.outputs.skip != 'true'
     runs-on: ubuntu-26.04
 
     # No other job reads the plugin manifests or the skill and command

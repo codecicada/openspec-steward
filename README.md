@@ -58,6 +58,12 @@ the archive commit.
 Three are pure text comparisons over `openspec/`, with no knowledge of your
 stack. 57 unit tests, no fixtures on disk.
 
+**Archive-head gate**: `openspec-archive-head` (`scripts/archive-head`) decides
+whether a pull request head may skip its test jobs. It skips only when the push
+since a green head changed nothing outside `openspec/` and `todo/`, so an
+archive commit costs one spec-check run instead of the full suite. It fails
+closed. Wiring: [docs/archive-head.md](docs/archive-head.md).
+
 ## Install
 
 The repository is its own Claude Code marketplace. Enable the plugin for

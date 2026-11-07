@@ -29,7 +29,7 @@ flowchart TD
   green1 -- "green" --> archive["archive<br/>/archive-on-green"]
   archive --> verify["verify the apply"]
   verify --> commit["commit the archive<br/>explicit paths only"]
-  commit --> ci2["watch CI again<br/>on the new head"]
+  commit --> ci2["watch CI again on the new head<br/>spec checks; tests may skip:<br/>archive head"]
   ci2 --> green2{"Green against<br/>the new head?"}
   green2 -- red --> fix2["fix and push"]
   fix2 --> ci2
@@ -265,7 +265,13 @@ The archive commit also removes the plan the change started from, with
 so a change that never had one needs no special case.
 
 Then commit the archive and let CI run again. That second CI cycle verifies the
-only thing the archive commit changed.
+only thing the archive commit changed. Only the spec checks can judge that: the
+code is the code the previous head already tested. A repository wired with
+`openspec-archive-head` therefore runs `archive head` and its spec checks on this
+head, and skips the test jobs. It skips only when the push touched nothing but
+`openspec/` and `todo/`, the previous head's checks all read `success`, and the
+base has not moved since. [CI on an archive head](archive-head.md) has the
+conditions and the wiring.
 
 ### Stage explicit paths
 
@@ -283,7 +289,9 @@ slash command" section has the incident, and the gates harness scans for it.
 ## Merge
 
 Merge only on explicit request. Before merging, verify green by name against the
-head SHA again — the archive commit is a new head. If the request comes while
+head SHA again — the archive commit is a new head. Test jobs reading `skipped`
+there are green only by the rule `/verify-green` gives, re-derived rather than
+read off the `archive head` job. If the request comes while
 checks are still running, say so and hold. The request is about intent, not
 timing.
 

@@ -4,6 +4,7 @@
   "description": "Drift checks for OpenSpec repositories: a MODIFIED delta cannot silently discard a scenario, and a capability that claims to enumerate code is held to it.",
   "type": "module",
   "bin": {
+    "openspec-archive-head": "scripts/archive-head/index.mjs",
     "openspec-check-specs": "scripts/check-specs/index.mjs",
     "openspec-steward-init": "scripts/init/index.mjs"
   },
