@@ -6,7 +6,7 @@
 
 ## Why
 
-On core-api, a hand-merged block that keeps the repo's own rules refuses
+In a consumer repository, a hand-merged block that keeps the repo's own rules refuses
 forever, since blocks compare as text, so `AGENTS.md` is never written. The
 19-line section overflows a 40-line router `AGENTS.md`, and "merge is the only
 gate" contradicts repos that gate apply, commit or archive.
@@ -20,7 +20,7 @@ gate" contradicts repos that gate apply, commit or archive.
 ## Non-goals
 
 - Writing into an existing `rules:` block.
-- Editing core-api.
+- Editing consumer repositories.
 - A release.
 
 ## Capabilities

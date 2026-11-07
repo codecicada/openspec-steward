@@ -5,13 +5,13 @@
 A flow change pushes at least two PR heads: the implementation, then the
 archive. CI runs every job on both, then again on the push to the base. The
 archive commit touches only `openspec/` and `todo/`, and no test job in steward
-or core-api reads either. Only spec checks judge it, and steward's CI has no
+or in a consumer repository reads either. Only spec checks judge it, and steward's CI has no
 spec check job at all: its "second cycle" checks nothing the archive changed.
 
 `pull_request` runs test the merge ref, so a head is only as green as the base
 it was merged with. `paths-ignore` cannot help: on `pull_request` it filters by
-the whole PR diff, not by the last push. core-api is on GitHub Free and has no
-required checks; steward is public.
+the whole PR diff, not by the last push. Steward is public, so the minutes
+saved here are free; the saving lands in private consumers.
 
 ## Decision
 
@@ -45,7 +45,7 @@ required checks; steward is public.
 ## Consequences
 
 - An archive head runs `archive head` and `specs`, not the full suite. In
-  core-api that would save its `test` job, about 3 of 5 billed minutes per PR.
+  a consumer it saves the test jobs, most of that head's billed minutes.
 - Test jobs start a few seconds later on every run, because they now wait on
   `archive head`.
 - A skipped matrix job shows one check with its name unexpanded. Name-by-name

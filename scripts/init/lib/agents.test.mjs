@@ -45,7 +45,7 @@ test('the section states the flow and points at the rest', () => {
   ok(AGENTS_SECTION.includes('docs/change-flow.md'));
 });
 
-// A router AGENTS.md caps its length and holds pointers, not prose: core-api's
+// A router AGENTS.md caps its length and holds pointers, not prose: one consumer's
 // is capped at 40 lines and sat at 31 when init first ran on it.
 test('the section fits a router AGENTS.md', () => {
   const lines = AGENTS_SECTION.split('\n');
