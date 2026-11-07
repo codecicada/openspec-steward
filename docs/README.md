@@ -23,6 +23,7 @@ safe to run without a gate in the middle.
 |---|---|
 | [The change flow](change-flow.md) | the sequence, where the gate is and why, what the brackets are for, what "green" means, what happens after archive |
 | [Spec drift and markers](spec-drift.md) | what a `MODIFIED` delta deletes silently, the markers and why their placement rules are opposites, the inventory seam |
+| [CI on an archive head](archive-head.md) | why the archive head may skip its test jobs, the five conditions, and how a consumer wires `openspec-archive-head` |
 | [The checker](checker.md) | how `check-specs` is built: the I/O shell, the pure core, each check, the output contract |
 | [Design principles](design.md) | the rules the rest of the package follows, and what it deliberately does not do |
 

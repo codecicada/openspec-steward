@@ -17,6 +17,27 @@ gh pr view <n> --json mergeable,mergeStateStatus
 Green means: **every** required check reads `success`, against that exact SHA,
 and the SHA still matches local `HEAD`.
 
+One exception, for an archive head in a repository wired with
+`openspec-archive-head` (see `docs/archive-head.md`). There, a check reading
+`skipped` counts as passing only if you re-derive the rule yourself rather than
+trusting the job that decided it. All three of these must hold:
+
+- `archive head` reads `success` on this SHA, and the spec checks job reads
+  `success` too.
+- The previous head reads `success` on **every** check, by name. That is the
+  head you verified before archiving. List its checks with the same `gh api`
+  call, against that SHA.
+- Every path the push changed is under `openspec/` or `todo/`:
+
+  ```bash
+  git diff --name-only <previous head> HEAD
+  ```
+
+If any of the three fails, a `skipped` check is not green: name it. A skipped
+matrix job shows as one check with its name unexpanded, such as
+`unit tests (node ${{ matrix.node }})`. Compare by name against the previous
+head's names, not this one's.
+
 Report anything else as not green, naming which checks are outstanding. In
 particular:
 

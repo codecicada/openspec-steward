@@ -304,6 +304,28 @@ else
   observe fail "init on a fresh config should exit 0 and write rules: and AGENTS.md; got status $STATUS and output: $OUT"
 fi
 
+# --- G: the archive-head bin decides through its own symlink -----------------
+#
+# Same entry guard, same silent failure: a bin that never runs main() prints
+# nothing and exits 0. So the observation is the printed decision, not the exit
+# code. A push event must decide skip=false and exit 0; a missing flag must exit
+# 2. Run from the fresh, non-git directory with no token, so nothing it prints
+# can come from the network or this repository's history.
+
+AH_BIN="$WORK/consumer/node_modules/.bin/openspec-archive-head"
+set +e
+OUT=$(cd "$WORK/fresh" && env -u GH_TOKEN -u GITHUB_TOKEN "$AH_BIN" --event push --before '' --head '' --base origin/master 2>&1)
+STATUS=$?
+USAGE_OUT=$(cd "$WORK/fresh" && "$AH_BIN" --event push 2>&1)
+USAGE_STATUS=$?
+set -e
+if [ -L "$AH_BIN" ] && [ "$STATUS" -eq 0 ] && printf '%s\n' "$OUT" | grep -qx 'skip=false' &&
+  [ "$USAGE_STATUS" -eq 2 ]; then
+  observe ok 'the archive-head bin decides skip=false on a push and exits 2 on a missing flag, through its symlink'
+else
+  observe fail "archive-head bin: push should print skip=false and exit 0 (got $STATUS: $OUT); a missing flag should exit 2 (got $USAGE_STATUS: $USAGE_OUT)"
+fi
+
 printf '\n'
 if [ "$FAILURES" -ne 0 ]; then
   printf '%s smoke observation(s) failed\n' "$FAILURES" >&2
