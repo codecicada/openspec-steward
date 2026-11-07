@@ -96,43 +96,63 @@ jobs:
 
       - run: node scripts/check-specs/index.mjs --root .
 
-  unit:
-    name: unit tests (node ${{ matrix.node }})
-    # Skipped on an archive head. A skipped matrix job shows as ONE check with
-    # its name unexpanded; commands/verify-green.md says how that head's green
-    # is read.
+  # Unit tests on three Node versions: 22 is what the consumer's CI runs on, 20
+  # is the floor declared in `engines`, and 24 is what development happens on
+  # today. The three are not padding: `run-tests.sh` exists *because* these
+  # versions disagree about what `node --test` accepts as an argument — a
+  # directory fails on 22 and 24, a glob fails on 20. That script's workaround
+  # is only held to its claim if all three actually run it.
+  #
+  # Three jobs, not a matrix, because they are gated on `archive head`. A
+  # matrix job skipped by a job-level `if:` is never expanded: it reports ONE
+  # check named `unit tests (node ${{ matrix.node }})`, so the required checks
+  # `unit tests (node 20|22|24)` never report and the ruleset blocks the merge.
+  # Seen on this repository's first archive head (56dccf8). A plain job keeps
+  # its static name when skipped, and a skipped required check satisfies the
+  # ruleset.
+  #
+  # Each is pinned to the current LTS image rather than `ubuntu-latest`, which
+  # still resolves to 24.04 and moves underneath you when GitHub migrates it. A
+  # runner image that changes on GitHub's schedule can redden or green a build
+  # that changed nothing here.
+  #
+  # The checker needs no git history, so the default shallow checkout is
+  # deliberate. No install step: the package has no dependencies, so there is
+  # nothing to install and no lockfile for `npm ci` to read.
+  unit-20:
+    name: unit tests (node 20)
     needs: archive-head
     if: needs.archive-head.outputs.skip != 'true'
-    # Pinned to the current LTS image rather than `ubuntu-latest`, which still
-    # resolves to 24.04 and moves underneath you when GitHub migrates it. A
-    # runner image that changes on GitHub's schedule can redden or green a
-    # build that changed nothing here.
     runs-on: ubuntu-26.04
-
-    strategy:
-      fail-fast: false
-      matrix:
-        # 22 is what the consumer's CI runs on. 20 is the floor declared in
-        # `engines`, and 24 is what development happens on today.
-        #
-        # The matrix is not padding: `run-tests.sh` exists *because* these
-        # versions disagree about what `node --test` accepts as an argument —
-        # a directory fails on 22 and 24, a glob fails on 20. That script's
-        # workaround is only held to its claim if all three actually run it.
-        node: ['20', '22', '24']
-
     steps:
-      # The checker needs no git history, so the default shallow checkout is
-      # deliberate rather than an oversight.
       - uses: actions/checkout@v7
-
       - uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '20'
+      - run: npm test
 
-      # No install step: the package has no dependencies, so there is nothing
-      # to install and no lockfile for `npm ci` to read. The tests are pure
-      # functions over text with no fixtures on disk.
+  unit-22:
+    name: unit tests (node 22)
+    needs: archive-head
+    if: needs.archive-head.outputs.skip != 'true'
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - run: npm test
+
+  unit-24:
+    name: unit tests (node 24)
+    needs: archive-head
+    if: needs.archive-head.outputs.skip != 'true'
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
       - run: npm test
 
   bin:
