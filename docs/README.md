@@ -104,6 +104,7 @@ scripts/init/lib/*.mjs              what init writes, decided over text, unit-te
 scripts/gates/refusal-cases.sh      each gate refusal, observed refusing
 scripts/plugin/validate.sh          claude plugin validate --strict, and three broken copies failing it
 scripts/pins/lib/pins.mjs           the OpenSpec version pins, held to each other
+scripts/release/lib/versions.mjs    the release version, held equal across its three files
 .github/workflows/ci.yml            unit tests on Node 20/22/24, smoke test on 22, gate refusals, plugin validate
 ```
 

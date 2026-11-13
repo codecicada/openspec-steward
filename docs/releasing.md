@@ -5,6 +5,12 @@ pinned in `.claude/settings.json` to a `ref`, and nothing is published to npm.
 So a release needs three things: a commit carrying the new version, a signed tag
 on that commit, and a GitHub release that says what changed.
 
+In this repository, `/release X.Y.Z` runs these steps in order
+([`.claude/commands/release.md`](../.claude/commands/release.md)). It refuses a
+bad start, stops once for the merge, and links back here for the reasons. A
+unit test, `scripts/release/lib/versions.test.mjs`, fails when the three
+version fields below disagree.
+
 ## Choosing the version
 
 Until 1.0:
