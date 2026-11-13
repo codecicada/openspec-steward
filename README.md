@@ -251,6 +251,9 @@ reason that stopped being true months ago. That class needs a reader.
 
 ## Developing this package
 
+Read [`AGENTS.md`](AGENTS.md) first: the rules this repository is worked by,
+a map of its directories, and the gates to run before pushing.
+
 ```bash
 npm test            # the unit tests: no dependencies, no fixtures on disk
 npm run test:bin    # packs, installs and drives the bins the way a consumer gets them

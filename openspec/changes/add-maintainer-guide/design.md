@@ -16,8 +16,11 @@ Claude Code reads `CLAUDE.md`, not `AGENTS.md`. Other agents read `AGENTS.md`.
    init's markers: rules, map, gates, maintaining. Init owns only the text
    between its markers, so a later init run replaces the section and leaves
    the rest alone.
-2. **`CLAUDE.md` imports it.** One line, `@AGENTS.md`, plus a sentence saying
-   why. No second copy of any rule.
+2. **`.claude/CLAUDE.md` imports it**, with `@../AGENTS.md` and a sentence
+   saying why. No second copy of any rule. Not at the root: the root is also
+   the plugin's root, and `claude plugin validate --strict` fails on a root
+   `CLAUDE.md`, because it would not reach the plugin's users as context.
+   Claude Code reads `.claude/CLAUDE.md` as project memory too.
 3. **The test.** In `scripts/init/lib/init.test.mjs`, read this repository's
    `openspec/config.yaml` and `AGENTS.md`, plan init over them, and expect
    `{ writes: {} }`. One assertion covers both files: a changed
