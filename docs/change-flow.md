@@ -19,8 +19,8 @@ flowchart TD
   checks -- yes --> opened[["FLOW OPEN<br/>the order below now binds"]]
   opened -- fresh --> explore["opsx explore<br/>entered at once, with the description"]
   opened -- resume --> nextStep(["enter the recorded next step<br/>explore only if stopped before propose"])
-  explore --> propose["propose<br/>proposal, design, tasks, delta specs"]
-  propose --> apply["apply<br/>implement the tasks"]
+  explore --> propose["propose<br/>proposal, design, delta specs,<br/>tasks each declaring tdd: yes or no"]
+  propose --> apply["apply<br/>implement the tasks;<br/>tdd: yes records red before the fix"]
   apply --> pr["open PR"]
   pr --> ci1["watch CI"]
   ci1 --> green1{"Green against<br/>the current head SHA,<br/>by name?"}

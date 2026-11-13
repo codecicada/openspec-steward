@@ -77,7 +77,7 @@ also means that it needs no git history.
 
 ## 7. Keep what is stack-specific at a seam
 
-Three of the four checks are text comparisons with no knowledge of the
+Four of the five checks are text comparisons with no knowledge of the
 consumer's stack. The one check that must read code (`inventories`) does so
 through a deriver module that the consumer owns and configures in
 `openspec-steward.json`. The package defines the contract (`derive`,

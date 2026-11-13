@@ -2,14 +2,16 @@
 /**
  * Specification drift checks for an OpenSpec repository.
  *
- * Four checks, none of which reads application code:
+ * Five checks, none of which reads application code:
  *
  *   scenarios    a MODIFIED delta omits a scenario the live requirement carries
  *   duplicates   one spec declares the same requirement name twice
  *   inventories  a capability that declares it enumerates code disagrees with it
  *   strict       openspec validate --specs --strict
+ *   tdd          a task does not declare tdd: yes|no, or a done tdd: yes task
+ *                records no red run
  *
- * Three of the four are pure text comparisons over `openspec/`. The fourth —
+ * Four of the five are pure text comparisons over `openspec/`. The other —
  * `inventories` — needs to derive something from the consumer's code, and that
  * is the one thing this package cannot know: routes come from NestJS
  * decorators in one repository, an Express router in another, an OpenAPI
@@ -48,6 +50,7 @@ import {
 import { parseDropMarkers, parseSpec } from './lib/parse.mjs';
 import { createResult, report } from './lib/report.mjs';
 import { checkScenarioDrops } from './lib/scenarios.mjs';
+import { checkTddDeclarations } from './lib/tdd.mjs';
 import { checkStrictValidation } from './lib/validate.mjs';
 
 const PATHS = {
@@ -66,6 +69,8 @@ change's delta would discard something:
   duplicates   one spec declares the same requirement name twice
   inventories  a capability that declares it enumerates code disagrees with it
   strict       openspec validate --specs --strict
+  tdd          a task does not declare tdd: yes|no, or a done tdd: yes task
+               records no red run
 
 Exits 0 when every check passes, 1 otherwise.
 Reads no application code, so none of these can tell whether a requirement is
@@ -249,6 +254,7 @@ export async function runAllChecks(
 
   const changes = collectActiveChanges(root).map((change) => ({
     name: change.name,
+    tasks: readOptional(join(change.abs, 'tasks.md')),
     deltas: collectSpecs(join(change.abs, 'specs')).map((delta) => ({
       capability: delta.capability,
       text: readFileSync(delta.abs, 'utf8'),
@@ -287,6 +293,17 @@ export async function runAllChecks(
     createResult(
       'strict',
       checkStrictValidation({ run: () => runOpenspecValidate(root) }),
+    ),
+    createResult(
+      'tdd',
+      changes
+        .filter((change) => change.tasks !== null)
+        .flatMap((change) =>
+          checkTddDeclarations({
+            path: `${PATHS.changes}/${change.name}/tasks.md`,
+            text: change.tasks,
+          }),
+        ),
     ),
   ];
 }

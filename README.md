@@ -46,7 +46,7 @@ to `todo/<slug>.md` and commits it. A later `/start-change` that matches it uses
 its slug and seeds the proposal from it, and `/archive-on-green` deletes it in
 the archive commit.
 
-**Checker** — `scripts/check-specs`, four checks over `openspec/`:
+**Checker** — `scripts/check-specs`, five checks over `openspec/`:
 
 | check | fails when |
 |---|---|
@@ -54,9 +54,10 @@ the archive commit.
 | `duplicates` | one spec declares the same requirement name twice |
 | `inventories` | a capability that declares it enumerates code disagrees with it |
 | `strict` | `openspec validate --specs --strict` does |
+| `tdd` | a task does not declare `tdd: yes\|no` with a reason, or a done `tdd: yes` task records no `red:` run |
 
-Three are pure text comparisons over `openspec/`, with no knowledge of your
-stack. 57 unit tests, no fixtures on disk.
+Four are pure text comparisons over `openspec/`, with no knowledge of your
+stack. Unit tests need no fixtures on disk.
 
 **Archive-head gate**: `openspec-archive-head` (`scripts/archive-head`) decides
 whether a pull request head may skip its test jobs. It skips only when the push
@@ -164,7 +165,7 @@ plugin namespace in front of them moves from `openspec-flow:` to
 
 ## Declaring an inventory
 
-Three of the four checks work anywhere. `inventories` has to derive something
+Four of the five checks work anywhere. `inventories` has to derive something
 from *your* code, which is the one thing this plugin cannot know: routes come
 from NestJS decorators in one repository, an Express router in another, an
 OpenAPI document in a third.

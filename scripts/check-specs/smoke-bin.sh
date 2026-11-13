@@ -112,7 +112,7 @@ printf '# bin installed as a symlink -> %s\n\n' "$(readlink "$BIN")"
 #
 # The Purpose section is deliberately over 50 characters: openspec's own strict
 # validation warns below that, and observation D needs a fixture that genuinely
-# passes all four checks rather than one that passes three.
+# passes all five checks rather than one that passes four.
 
 mkdir -p "$WORK/consumer/openspec/specs/web-dashboard"
 mkdir -p "$WORK/consumer/openspec/changes/2026-01-01-smoke/specs/web-dashboard"
@@ -243,10 +243,10 @@ Reworded prose.
 MD
 
 run_bin --root .
-if [ "$STATUS" -eq 0 ] && printf '%s' "$OUT" | grep -q 'specification checks passed (4)'; then
-  observe ok 'restoring the scenario makes all four checks pass'
+if [ "$STATUS" -eq 0 ] && printf '%s' "$OUT" | grep -q 'specification checks passed (5)'; then
+  observe ok 'restoring the scenario makes all five checks pass'
 else
-  observe fail "the repaired fixture should exit 0 with all four checks passing; got status $STATUS and output: $OUT"
+  observe fail "the repaired fixture should exit 0 with all five checks passing; got status $STATUS and output: $OUT"
 fi
 
 # --- E: a legacy config file is read with a note, not a finding ---------------
@@ -264,7 +264,7 @@ STATUS=$?
 set -e
 ERR=$(cat "$WORK/stderr")
 if [ "$STATUS" -eq 0 ] &&
-  printf '%s' "$OUT" | grep -q 'specification checks passed (4)' &&
+  printf '%s' "$OUT" | grep -q 'specification checks passed (5)' &&
   ! printf '%s' "$OUT" | grep -q 'deprecated' &&
   printf '%s' "$ERR" | grep -q 'openspec-flow.json is deprecated'; then
   observe ok 'a legacy openspec-flow.json passes with its note on stderr only'
@@ -325,6 +325,46 @@ if [ -L "$AH_BIN" ] && [ "$STATUS" -eq 0 ] && printf '%s\n' "$OUT" | grep -qx 's
 else
   observe fail "archive-head bin: push should print skip=false and exit 0 (got $STATUS: $OUT); a missing flag should exit 2 (got $USAGE_STATUS: $USAGE_OUT)"
 fi
+
+# --- H: an undeclared task fails tdd, and only in an unarchived change -------
+#
+# The smoke change has had no tasks.md until now, which is the "change without
+# tasks" case D and E already passed. An undeclared task must fail naming
+# `tdd` and the task. The same undeclared file under `archive/` must not: once
+# the active task is declared, the run is green again with the archived copy
+# still undeclared.
+
+TASKS="$WORK/consumer/openspec/changes/2026-01-01-smoke/tasks.md"
+ARCHIVED="$WORK/consumer/openspec/changes/archive/2025-12-01-old"
+cat >"$TASKS" <<'MD'
+# Tasks
+
+- [ ] 1.1 Undeclared task
+MD
+
+run_bin --root .
+UNDECLARED_STATUS=$STATUS
+UNDECLARED_OUT=$OUT
+
+mkdir -p "$ARCHIVED"
+cp -f "$TASKS" "$ARCHIVED/tasks.md"
+cat >"$TASKS" <<'MD'
+# Tasks
+
+- [ ] 1.1 Declared task
+  - tdd: no — fixture
+MD
+
+run_bin --root .
+if [ "$UNDECLARED_STATUS" -ne 0 ] &&
+  printf '%s' "$UNDECLARED_OUT" | grep -q '^tdd: .*1\.1 Undeclared task.*no tdd declaration' &&
+  [ "$STATUS" -eq 0 ] && printf '%s' "$OUT" | grep -q 'specification checks passed (5)'; then
+  observe ok 'an undeclared task fails tdd by name, and an archived one is ignored'
+else
+  observe fail "undeclared task should fail naming tdd (got $UNDECLARED_STATUS: $UNDECLARED_OUT); declared active task with an undeclared archived one should pass all five (got $STATUS: $OUT)"
+fi
+rm -f "$TASKS"
+rm -rf "$ARCHIVED"
 
 printf '\n'
 if [ "$FAILURES" -ne 0 ]; then

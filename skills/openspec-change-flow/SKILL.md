@@ -110,6 +110,29 @@ resume enters the next step `STOPPED.md` recorded, not explore, unless that step
 is explore. An order that only has to be read can be skipped by omission, which
 is how explore once went missing from the order `/start-change` stated.
 
+## Declaring TDD per task
+
+At **propose**, after explore, every task in `tasks.md` declares whether its
+test comes first, as an un-boxed sub-bullet with a reason:
+
+```
+- [ ] 1.1 Write the parser in `lib/parse.mjs`. Verify: `npm test` passes.
+  - tdd: yes — parser edge cases are where a silent pass hides
+- [ ] 1.2 Update the README.
+  - tdd: no — docs only
+```
+
+At **apply**, a `tdd: yes` task writes the test first, runs it, and records the
+red run before the fix, as `- red: <command> → <failing line>`. Then the fix,
+then the box. A red that only comes from a missing module is not the red that
+counts: stub the export so the assertions fail.
+
+The choice is made per task, after explore, not as an effort level picked before
+anyone knows where the risk is. It adds no gate: the declarations are read in
+the PR, at merge. The `tdd` check in `openspec-check-specs` fails a task with no
+declaration, and a done `tdd: yes` task with no `red:` line. Keep both
+sub-bullets un-boxed: a boxed one is a task to OpenSpec.
+
 ## Archiving on green
 
 Archive when CI is green, without asking again. **Green means every required
