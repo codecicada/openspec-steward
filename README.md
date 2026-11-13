@@ -78,7 +78,7 @@ everyone who opens the consumer repository by committing this to its
       "source": {
         "source": "github",
         "repo": "codecicada/openspec-steward",
-        "ref": "v0.7.0"
+        "ref": "v0.8.0"
       }
     }
   },
