@@ -15,7 +15,7 @@ live only in past pull requests and session memory.
 
 - `AGENTS.md`: hand-written rules, map, gates and maintenance links, then
   init's section.
-- `CLAUDE.md`: imports `AGENTS.md`.
+- `.claude/CLAUDE.md`: imports `AGENTS.md`.
 - A `project-init` test: init plans no writes on this repository.
 
 ## Non-goals
@@ -33,5 +33,5 @@ live only in past pull requests and session memory.
 
 ## Impact
 
-`AGENTS.md`, `CLAUDE.md`, `scripts/init/lib/init.test.mjs`, `docs/README.md`,
+`AGENTS.md`, `.claude/CLAUDE.md`, `scripts/init/lib/init.test.mjs`, `docs/README.md`,
 `README.md`.

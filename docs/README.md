@@ -27,6 +27,7 @@ safe to run without a gate in the middle.
 | [The checker](checker.md) | how `check-specs` is built: the I/O shell, the pure core, each check, the output contract |
 | [Design principles](design.md) | the rules the rest of the package follows, and what it deliberately does not do |
 | [Releasing](releasing.md) | for maintainers: choosing the version, the bump, the signed tag and the GitHub release |
+| [AGENTS.md](../AGENTS.md) | for contributors: the rules this repository is worked by, its map and its gates |
 
 ## The package at a glance
 

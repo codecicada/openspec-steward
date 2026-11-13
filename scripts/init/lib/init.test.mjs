@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { deepStrictEqual, match, ok, strictEqual } from 'node:assert/strict';
 import { test } from 'node:test';
 import { AGENTS_SECTION, BEGIN } from './agents.mjs';
@@ -128,4 +129,19 @@ test('a plan applied once yields no writes the second time', () => {
   });
 
   deepStrictEqual(second, { writes: {} });
+});
+
+// This repository is its own first consumer: it carries the rules and the
+// AGENTS.md section it asks a consumer to carry. Changing STEWARD_RULES or
+// AGENTS_SECTION without running init here turns this red.
+test('init plans nothing on this repository', () => {
+  const read = (path) => {
+    const url = new URL(`../../../${path}`, import.meta.url);
+    return existsSync(url) ? readFileSync(url, 'utf8') : null;
+  };
+
+  deepStrictEqual(
+    planInit({ config: read('openspec/config.yaml'), agents: read('AGENTS.md') }),
+    { writes: {} },
+  );
 });
