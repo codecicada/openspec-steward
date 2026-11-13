@@ -35,6 +35,7 @@ to use the plugin in another repository is in the [README](README.md) and
 | `scripts/archive-head/` | `openspec-archive-head`, which decides when an archive head may skip its tests |
 | `scripts/gates/` | the harness that watches each `/start-change` and `/stop-change` refusal refuse |
 | `scripts/plugin/` | Claude Code's own validator over the manifests |
+| `scripts/pins/` | the test that holds the OpenSpec version pins to each other |
 | `docs/` | how the plugin works and why, for its users |
 | `openspec/` | this repository's own specifications and changes |
 | `todo/` | deferred plans, each picked up with `/start-change <slug>` |
@@ -54,6 +55,7 @@ node scripts/check-specs/index.mjs --root .
 ## Maintaining
 
 - Releasing: [`docs/releasing.md`](docs/releasing.md).
+- Moving a pinned tool: [`docs/maintaining.md`](docs/maintaining.md).
 - Planned maintenance work: the plans in [`todo/`](todo/).
 
 <!-- openspec-steward:begin -->

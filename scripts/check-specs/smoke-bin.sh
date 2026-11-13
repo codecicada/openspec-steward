@@ -45,6 +45,9 @@ unset npm_config_allow_scripts NPM_CONFIG_ALLOW_SCRIPTS
 # repository and an upstream release must not be able to redden a build that
 # changed nothing here. Note the scope: the unscoped `openspec` on npm is an
 # unrelated package whose only published version is 0.0.0.
+#
+# This is the OpenSpec *floor*: the oldest CLI steward supports, held below the
+# current version on purpose. Moving it is in docs/maintaining.md.
 OPENSPEC_VERSION='@fission-ai/openspec@1.13.2'
 
 REPO=$(cd "$(dirname "$0")/../.." && pwd)

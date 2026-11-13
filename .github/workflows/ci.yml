@@ -85,6 +85,11 @@ jobs:
     # installed without saving it: the package keeps zero dependencies. Pinned
     # exactly, because a minor release adding a validation rule would redden a
     # build that changed nothing here.
+    #
+    # This is the *current* OpenSpec pin: `generatedBy` under `.claude/skills/`
+    # and the `TASK_LINE` comment in `tdd.mjs` name the same version, and
+    # `scripts/pins/` fails `npm test` when they do not. Move them together, as
+    # `docs/maintaining.md` says.
     steps:
       - uses: actions/checkout@v7
 
@@ -92,7 +97,7 @@ jobs:
         with:
           node-version: '22'
 
-      - run: npm install --no-save --no-audit --no-fund @fission-ai/openspec@1.15.0
+      - run: npm install --no-save --no-audit --no-fund @fission-ai/openspec@1.17.0
 
       - run: node scripts/check-specs/index.mjs --root .
 

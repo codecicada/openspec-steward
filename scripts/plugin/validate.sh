@@ -43,7 +43,7 @@ unset npm_config_allow_scripts NPM_CONFIG_ALLOW_SCRIPTS
 
 # Pinned, not floating: an upstream release must not be able to change the
 # result of a build that changed nothing here. Bump it in its own commit; B and
-# C are the test of the bump.
+# C are the test of the bump. The steps are in docs/maintaining.md.
 CLAUDE_CODE_VERSION='@anthropic-ai/claude-code@2.1.310'
 
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
