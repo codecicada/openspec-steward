@@ -24,6 +24,7 @@ const SUPERSET = [
   '  tasks:',
   '    - Atomic tasks, 2-5 minutes each, with file paths and verification steps',
   '    - Include acceptance criteria per task',
+  '    - "Under each task, declare `- tdd: yes|no — <reason>` at propose; a done `tdd: yes` task records `- red: <command> → <failing line>` from before the fix"',
   '    - Run the gates before marking a task done',
 ].join('\n');
 
@@ -112,8 +113,19 @@ test('the steward block parses into its keys and items, quotes dropped', () => {
     tasks: [
       'Atomic tasks, 2-5 minutes each, with file paths and verification steps',
       'Include acceptance criteria per task',
+      'Under each task, declare `- tdd: yes|no — <reason>` at propose; a done `tdd: yes` task records `- red: <command> → <failing line>` from before the fix',
     ],
   });
+});
+
+test('a steward tasks item requires the tdd declaration and its red line', () => {
+  const tasks = parseRules(STEWARD_RULES).tasks ?? [];
+
+  strictEqual(
+    tasks.filter((item) => item.includes('tdd: yes|no') && item.includes('red:'))
+      .length,
+    1,
+  );
 });
 
 test('blank and comment lines inside the block are skipped', () => {

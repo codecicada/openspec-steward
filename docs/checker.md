@@ -1,6 +1,6 @@
 # The checker
 
-`openspec-check-specs` (`scripts/check-specs/index.mjs`) runs four checks over
+`openspec-check-specs` (`scripts/check-specs/index.mjs`) runs five checks over
 `openspec/` and exits `0` when all of them pass, `1` otherwise.
 
 ```bash
@@ -13,11 +13,12 @@ npx openspec-check-specs --root .
 | `duplicates` | one spec declares the same requirement name twice | text only |
 | `inventories` | a capability that declares it enumerates code disagrees with it | the consumer's deriver |
 | `strict` | `openspec validate --specs --strict` fails | the `openspec` CLI |
+| `tdd` | a task does not declare `tdd: yes\|no`, or a done `tdd: yes` task records no `red:` run | text only |
 
 ## Shape: an I/O shell around a pure core
 
 `index.mjs` owns every disk read and the one subprocess call. Each module under
-`lib/` is a pure function over text. That split is why the 57 unit tests need no
+`lib/` is a pure function over text. That split is why its unit tests need no
 fixtures on disk.
 
 ```mermaid
@@ -40,6 +41,7 @@ flowchart TB
     DUP["duplicates.mjs<br/>checkDuplicateRequirements"]
     INV["inventories.mjs<br/>collectDeclarations,<br/>checkInventories"]
     VAL["validate.mjs<br/>checkStrictValidation"]
+    TDD["tdd.mjs<br/>checkTddDeclarations"]
     REP["report.mjs<br/>createResult, report"]
   end
 
@@ -47,11 +49,12 @@ flowchart TB
   CFG --> DER
   SPECS --> PARSE
   CHG --> PARSE
+  CHG -- "tasks.md text" --> TDD
   PARSE --> SCN & DUP & INV
   DER --> INV
   ITEMS --> INV
   SUB -- "injected as run()" --> VAL
-  SCN & DUP & INV & VAL --> REP
+  SCN & DUP & INV & VAL & TDD --> REP
   REP -- "exit code" --> CLI
 ```
 
@@ -91,7 +94,7 @@ sequenceDiagram
   R->>D: import, then derive(root)
   D-->>R: string list, normalised
   loop each unarchived change
-    R->>FS: read changes/name/specs/**/spec.md
+    R->>FS: read changes/name/specs/**/spec.md and tasks.md
   end
   R->>R: collectDeclarations(live, changes) — deltas overlay live lists
   loop each delta
@@ -102,7 +105,10 @@ sequenceDiagram
   R->>O: validate --specs --strict
   O-->>R: status, stdout, stderr
   R->>R: checkStrictValidation
-  R-->>M: four results
+  loop each change with a tasks.md
+    R->>R: checkTddDeclarations(path, text)
+  end
+  R-->>M: five results
   M->>P: report(results)
   P-->>M: 0 or 1
 ```
@@ -168,6 +174,27 @@ copy would diverge.
 Pin the CLI as a devDependency in the consumer repository, with its scope:
 **`@fission-ai/openspec`**. The unscoped `openspec` package on npm is an
 unrelated stub at `0.0.0`.
+
+### `tdd` — each task declares whether its test comes first
+
+For each unarchived change with a `tasks.md`, each task must carry exactly one
+un-boxed sub-bullet `tdd: yes` or `tdd: no`, then a separator (`—`, `–`, `-` or
+`:`) and a reason. A done task declared `tdd: yes` must also carry a non-empty
+`red:` sub-bullet: the failing run from before the fix.
+
+```
+- [x] 1.1 Write the parser
+  - tdd: yes — parser edge cases
+  - red: npm test → ✖ undeclared task is a finding
+```
+
+A task is what OpenSpec counts as one: the check copies OpenSpec's
+`TASK_LINE_PATTERN`, so the two never disagree on the count. A task's sub-lines
+run to the next task line or heading. One finding per task at most. A change
+with no `tasks.md` yet is skipped, as are archived changes.
+
+The `red:` line is a claim. The check does not rerun it; a reviewer can. See
+the flow skill's "Declaring TDD per task" for when each line is written.
 
 ## Output contract
 

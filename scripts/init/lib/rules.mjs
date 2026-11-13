@@ -32,6 +32,7 @@ export const STEWARD_RULES = [
   '  tasks:',
   '    - Atomic tasks, 2-5 minutes each, with file paths and verification steps',
   '    - Include acceptance criteria per task',
+  '    - "Under each task, declare `- tdd: yes|no — <reason>` at propose; a done `tdd: yes` task records `- red: <command> → <failing line>` from before the fix"',
 ].join('\n');
 
 /**

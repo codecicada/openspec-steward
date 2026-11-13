@@ -1,6 +1,6 @@
 # check-specs — what each checker sees, and what it cannot
 
-Four checks, run by the `openspec-check-specs` bin (`../index.mjs`). The design
+Five checks, run by the `openspec-check-specs` bin (`../index.mjs`). The design
 behind them, with diagrams, is in [`docs/checker.md`](../../../docs/checker.md).
 
 ## The boundary, first
@@ -170,6 +170,17 @@ copy would diverge from whatever it means next month.
 - A non-zero exit whose output names no failing item still fails, printing the
   tail. A check that goes quiet when it stops recognising its own tool's output
   is worse than one that prints too much.
+
+## `tdd` — each task declares whether its test comes first
+
+- **Sees**: each unarchived change's `tasks.md`. A task is a line OpenSpec's
+  own `TASK_LINE_PATTERN` matches; its sub-lines run to the next task or
+  heading.
+- **Fails**: no `tdd: yes|no` sub-bullet, a value other than `yes`/`no`, no
+  reason after the separator, two declarations, or a done `tdd: yes` task with
+  no non-empty `red:` sub-bullet. One finding per task.
+- **Cannot see**: whether the `red:` run really failed. It is a claim the check
+  only requires to be written down; a reviewer can rerun it.
 
 ## Shape
 
