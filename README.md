@@ -252,7 +252,7 @@ reason that stopped being true months ago. That class needs a reader.
 ## Developing this package
 
 ```bash
-npm test            # 79 unit tests, no dependencies, no fixtures on disk
+npm test            # the unit tests: no dependencies, no fixtures on disk
 npm run test:bin    # packs, installs and drives the bins the way a consumer gets them
 npm run test:gates  # watches each /start-change and /stop-change refusal refuse
 npm run test:plugin # Claude Code's own validator over the manifests, skills and commands
