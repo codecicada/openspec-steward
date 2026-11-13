@@ -27,6 +27,7 @@ safe to run without a gate in the middle.
 | [The checker](checker.md) | how `check-specs` is built: the I/O shell, the pure core, each check, the output contract |
 | [Design principles](design.md) | the rules the rest of the package follows, and what it deliberately does not do |
 | [Releasing](releasing.md) | for maintainers: choosing the version, the bump, the signed tag and the GitHub release |
+| [Maintaining the pinned tools](maintaining.md) | for maintainers: moving the OpenSpec, Claude Code and GitHub Actions pins, and how to tell the move is good |
 | [AGENTS.md](../AGENTS.md) | for contributors: the rules this repository is worked by, its map and its gates |
 
 ## The package at a glance
@@ -102,6 +103,7 @@ scripts/init/index.mjs              init entry point: all disk I/O
 scripts/init/lib/*.mjs              what init writes, decided over text, unit-tested
 scripts/gates/refusal-cases.sh      each gate refusal, observed refusing
 scripts/plugin/validate.sh          claude plugin validate --strict, and three broken copies failing it
+scripts/pins/lib/pins.mjs           the OpenSpec version pins, held to each other
 .github/workflows/ci.yml            unit tests on Node 20/22/24, smoke test on 22, gate refusals, plugin validate
 ```
 

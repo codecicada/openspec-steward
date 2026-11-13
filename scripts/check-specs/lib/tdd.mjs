@@ -23,7 +23,7 @@ import { createFailure } from './report.mjs';
 
 /**
  * OpenSpec's own task line, copied from `TASK_LINE_PATTERN` in
- * `@fission-ai/openspec` `dist/utils/task-progress.js` (1.16.1). Any bullet
+ * `@fission-ai/openspec` `dist/utils/task-progress.js` (1.17.0). Any bullet
  * (`-`, `*`, `+`, `1.`, `1)`) at any indent, then a box. A box marked `x` or
  * `X` is done. `- [x](...)` is a link, not a task; a whitespace-only box such
  * as `- [ ](...)` still counts, as it does for OpenSpec.
