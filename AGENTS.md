@@ -58,8 +58,7 @@ node scripts/check-specs/index.mjs --root .
 - Releasing: run `/release X.Y.Z`, which follows
   [`docs/releasing.md`](docs/releasing.md).
 - Moving a pinned tool: [`docs/maintaining.md`](docs/maintaining.md).
-- Planned maintenance work: the plans in `todo/`, when any are deferred. The
-  directory exists only while it holds one.
+- Planned maintenance work: the plans in [`todo/`](todo/).
 
 <!-- openspec-steward:begin -->
 ## [OpenSpec change flow](https://github.com/codecicada/openspec-steward/blob/master/docs/change-flow.md)
