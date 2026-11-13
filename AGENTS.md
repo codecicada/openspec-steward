@@ -19,8 +19,8 @@ to use the plugin in another repository is in the [README](README.md) and
   repository".
 - **Never hand-edit the OpenSpec files in `.claude/`** (`commands/opsx/` and
   `skills/openspec-*`). `openspec update` generates them. Regenerate them with
-  the CLI version their `generatedBy` names. `.claude/CLAUDE.md` is the one
-  hand-written file there; it imports this one.
+  the CLI version their `generatedBy` names. Two files there are hand-written:
+  `.claude/CLAUDE.md`, which imports this one, and `.claude/commands/release.md`.
 - **The package has no dependencies.** Tools that only the tests need are
   installed with `--no-save`, at an exact version.
 
@@ -36,6 +36,7 @@ to use the plugin in another repository is in the [README](README.md) and
 | `scripts/gates/` | the harness that watches each `/start-change` and `/stop-change` refusal refuse |
 | `scripts/plugin/` | Claude Code's own validator over the manifests |
 | `scripts/pins/` | the test that holds the OpenSpec version pins to each other |
+| `scripts/release/` | the test that holds the release version equal across its three files |
 | `docs/` | how the plugin works and why, for its users |
 | `openspec/` | this repository's own specifications and changes |
 | `todo/` | deferred plans, each picked up with `/start-change <slug>` |
@@ -54,7 +55,8 @@ node scripts/check-specs/index.mjs --root .
 
 ## Maintaining
 
-- Releasing: [`docs/releasing.md`](docs/releasing.md).
+- Releasing: run `/release X.Y.Z`, which follows
+  [`docs/releasing.md`](docs/releasing.md).
 - Moving a pinned tool: [`docs/maintaining.md`](docs/maintaining.md).
 - Planned maintenance work: the plans in [`todo/`](todo/).
 
