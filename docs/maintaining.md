@@ -12,14 +12,18 @@ OpenSpec is pinned twice, on purpose:
 | pin | where | version | what it is for |
 |---|---|---|---|
 | **floor** | `scripts/check-specs/smoke-bin.sh` `OPENSPEC_VERSION` | 1.13.2 | the oldest CLI steward supports; the smoke test installs it into a consumer |
-| **current** | `.github/workflows/ci.yml`, the `specification checks` install | 1.17.0 | `strict` in CI |
-| **current** | `generatedBy` in each `.claude/skills/openspec-*/SKILL.md` | 1.17.0 | the CLI that wrote the files `openspec update` generates |
-| **current** | the `TASK_LINE` comment in `scripts/check-specs/lib/tdd.mjs` | 1.17.0 | the CLI `TASK_LINE_PATTERN` was compared against |
+| **current** | `.github/workflows/ci.yml`, the `specification checks` install | 2.2.0 | `strict` and the generated-files check in CI |
+| **current** | the `TASK_LINE` comment in `scripts/check-specs/lib/tdd.mjs` | 2.2.0 | the CLI `TASK_LINE_PATTERN` was compared against |
 
 `scripts/pins/lib/pins.test.mjs` holds them together: `npm test` fails when the
 current pins name different versions, when the floor is above the current
 version, or when it cannot find a pin. The floor and the current version are
 meant to differ.
+
+The files `openspec update` generates carry no version (checked at 2.2.0). They
+are the skills in `.agents/skills/` and their links in `.claude/skills/`. In the
+`specification checks` job, `scripts/pins/index.mjs` asks the pinned CLI what it
+would change and fails if that is anything in the repository.
 
 Always install the scoped package, `@fission-ai/openspec`. The bare `openspec` on
 npm is an unrelated package.
@@ -39,14 +43,14 @@ All of it in one change, and one commit for the move. `X.Y.Z` is the new version
 
    ```bash
    npx --no-install openspec update
-   grep -rh generatedBy .claude | sort | uniq -c    # every line reads X.Y.Z
    npx --no-install openspec update --force
    git status --porcelain                            # nothing new since the first run
+   node scripts/pins/index.mjs                       # generated files match the CLI
    ```
 
    The second run is the check #21 skipped: it committed output from 1.13.2
    labelled as 1.14.1, and #22 had to restore the files. Nothing outside
-   `.claude/` should change.
+   `.agents/skills/` and `.claude/skills/` should change.
 
 3. **Compare the task-line pattern.** `tdd.mjs` copies OpenSpec's own pattern so
    the `tdd` check counts the same tasks OpenSpec does.
@@ -78,8 +82,9 @@ not have. Raise it to the oldest version that has it, not to the newest.
 
 - Change `OPENSPEC_VERSION` in `smoke-bin.sh` and run `npm run test:bin`.
 - Check the Node it needs: `npm view @fission-ai/openspec@X.Y.Z engines.node`.
-  1.15.x and earlier need Node 20.19; 1.16.0 and later need 22.12. A floor past
-  1.15.x raises the Node a consumer needs for the `strict` check.
+  1.15.x and earlier need Node 20.19; 1.16.0 and later need 22.12, and
+  2.1.0 and later need 22.20. A floor past 1.15.x raises the Node a consumer
+  needs for the `strict` check.
 - `scripts/check-specs/lib/validate.test.mjs` reads the output shape 1.13.2 and
   1.14.0 print. Rerun it against what the new floor prints.
 - Update the README if what a consumer has to install changes.
@@ -87,8 +92,11 @@ not have. Raise it to the oldest version that has it, not to the newest.
 ### A new major version
 
 Look before any pin moves to it, in a change of its own. Read the release notes
-for anything `strict`, the task-line pattern or `generatedBy` rely on. OpenSpec
-has announced that 2.0 drops the command files under `.claude/commands/opsx/`.
+for anything `strict`, the task-line pattern or the generated files rely on, and
+for the Node it needs. Then compare the old CLI with the new one on a spec
+broken on purpose, not only on this repository: `strict` must still exit 1 and
+name the same item. Check too that `openspec update --dry-run --json` still
+prints `changes` and `failures`, which `scripts/pins/lib/generated.mjs` reads.
 
 ## Claude Code
 
