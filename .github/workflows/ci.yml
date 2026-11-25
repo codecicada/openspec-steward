@@ -86,10 +86,13 @@ jobs:
     # exactly, because a minor release adding a validation rule would redden a
     # build that changed nothing here.
     #
-    # This is the *current* OpenSpec pin: `generatedBy` under `.claude/skills/`
-    # and the `TASK_LINE` comment in `tdd.mjs` name the same version, and
-    # `scripts/pins/` fails `npm test` when they do not. Move them together, as
-    # `docs/maintaining.md` says.
+    # This is the *current* OpenSpec pin: the `TASK_LINE` comment in `tdd.mjs`
+    # names the same version, and `scripts/pins/` fails `npm test` when it does
+    # not. Move them together, as `docs/maintaining.md` says.
+    #
+    # The last step holds the generated skills to this CLI. It runs here because
+    # this is the one job that installs it. OpenSpec 2.2.0 needs Node 22.20 or
+    # later, which `22` resolves to.
     steps:
       - uses: actions/checkout@v7
 
@@ -97,9 +100,11 @@ jobs:
         with:
           node-version: '22'
 
-      - run: npm install --no-save --no-audit --no-fund @fission-ai/openspec@1.17.0
+      - run: npm install --no-save --no-audit --no-fund @fission-ai/openspec@2.2.0
 
       - run: node scripts/check-specs/index.mjs --root .
+
+      - run: node scripts/pins/index.mjs
 
   # Unit tests on three Node versions: 22 is what the consumer's CI runs on, 20
   # is the floor declared in `engines`, and 24 is what development happens on
