@@ -17,9 +17,9 @@ to use the plugin in another repository is in the [README](README.md) and
 - **The repository is public.** No file, commit message, pull request or release
   note names a consumer repository or states a fact about one. Say "a consumer
   repository".
-- **Never hand-edit the OpenSpec files in `.claude/`** (`commands/opsx/` and
-  `skills/openspec-*`). `openspec update` generates them. Regenerate them with
-  the CLI version their `generatedBy` names. Two files there are hand-written:
+- **Never hand-edit the OpenSpec files** in `.agents/skills/openspec*`, or their
+  links in `.claude/skills/`. `openspec update` generates them. Regenerate them
+  with the CLI version `ci.yml` pins. Two files in `.claude/` are hand-written:
   `.claude/CLAUDE.md`, which imports this one, and `.claude/commands/release.md`.
 - **The package has no dependencies.** Tools that only the tests need are
   installed with `--no-save`, at an exact version.
@@ -35,7 +35,7 @@ to use the plugin in another repository is in the [README](README.md) and
 | `scripts/archive-head/` | `openspec-archive-head`, which decides when an archive head may skip its tests |
 | `scripts/gates/` | the harness that watches each `/start-change` and `/stop-change` refusal refuse |
 | `scripts/plugin/` | Claude Code's own validator over the manifests |
-| `scripts/pins/` | the test that holds the OpenSpec version pins to each other |
+| `scripts/pins/` | the test that holds the OpenSpec version pins to each other, and the check that holds the generated skills to the pinned CLI |
 | `scripts/release/` | the test that holds the release version equal across its three files |
 | `docs/` | how the plugin works and why, for its users |
 | `openspec/` | this repository's own specifications and changes |

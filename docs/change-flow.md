@@ -17,7 +17,7 @@ flowchart TD
   deserve -- yes --> checks{"clean tree? base current?<br/>name free? no other change open?"}
   checks -- no --> refuse(["Refused: report it,<br/>the flow does not open"])
   checks -- yes --> opened[["FLOW OPEN<br/>the order below now binds"]]
-  opened -- fresh --> explore["opsx explore<br/>entered at once, with the description"]
+  opened -- fresh --> explore["explore<br/>entered at once, with the description"]
   opened -- resume --> nextStep(["enter the recorded next step<br/>explore only if stopped before propose"])
   explore --> propose["propose<br/>proposal, design, delta specs,<br/>tasks each declaring tdd: yes or no"]
   propose --> apply["apply<br/>implement the tasks;<br/>tdd: yes records red before the fix"]

@@ -9,7 +9,7 @@ version: 0.3.0
 ```
 /start-change <description>     <- names the change, opens the flow,
                                    or resumes a suspended one
-  opsx explore -> propose -> apply -> open PR -> watch CI
+  explore -> propose -> apply -> open PR -> watch CI
     on green: archive, then merge on explicit request
     on red:   fix, push, watch again
 /stop-change <name>             <- stops the flow: closed if it reached its end,
